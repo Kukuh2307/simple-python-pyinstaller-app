@@ -30,16 +30,10 @@ pipeline {
             agent {
                 docker {
                     image 'cdrx/pyinstaller-linux:python2'
-                    user 'root' // Use a user with appropriate permissions
                 }
             }
             steps {
-                script {
-                    // Install pyinstaller
-                    sh 'pip install pyinstaller'
-                    // Run pyinstaller
-                    sh 'pyinstaller --onefile sources/add2vals.py'
-                }
+                sh 'pyinstaller --onefile sources/add2vals.py'
             }
             post {
                 success {
