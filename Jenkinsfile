@@ -16,7 +16,7 @@ pipeline {
         stage('Manual Approval') {
             steps {
                 script {
-                    def userInput = input message: 'Lanjutkan ke tahap Deploy?', submitter: 'admin,deployer'
+                    def userInput = input message: 'Lanjutkan ke tahap Deploy?', submitter: '*'
 
                     if (userInput == "Abort") {
                         error('Pengguna menghentikan pipeline.')
