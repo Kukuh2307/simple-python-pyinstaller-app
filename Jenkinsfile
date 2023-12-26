@@ -30,19 +30,19 @@ pipeline {
         }
 
         // MANUAL APROVAL
-            stage('Manual Approval') {
-                steps {
-                    script {
-                        def userInput = input message: 'Lanjutkan ke tahap Deploy?', submitter: '*'
+        stage('Manual Approval') {
+            steps {
+                script {
+                    def userInput = input message: 'Lanjutkan ke tahap Deploy?', submitter: '*'
 
-                        if (userInput == "Abort") {
-                            error('Pengguna menghentikan pipeline.')
-                        }
+                    if (userInput == "Abort") {
+                        error('Pengguna menghentikan pipeline.')
                     }
                 }
             }
+        }
 
-        stage('Deliver') {
+        stage('Deliver & Deploy') {
             agent any
             environment {
                 VOLUME = '$(pwd)/sources:/src'
@@ -61,19 +61,5 @@ pipeline {
                 }
             }
         }
-
-        // DEPLOY
-            stage('Deploy') {
-                agent any
-            s   teps {
-                    script {
-                        echo 'Deploying the application to production...'
-
-                        sleep time: 60, unit: 'SECONDS'
-
-                        echo 'Aplikasi berhasil di-deploy.'
-                    }
-                }
-            }
     }
 }
