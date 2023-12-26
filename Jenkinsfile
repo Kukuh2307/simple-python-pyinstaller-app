@@ -1,48 +1,19 @@
 pipeline {
-    agent none 
+    agent any
     stages {
-        stage('Build') { 
-            agent {
-                docker {
-                    image 'python:2-alpine' 
-                }
-            }
+        stage('Build') {
             steps {
-                sh 'python -m py_compile sources/add2vals.py sources/calc.py' 
-                stash(name: 'compiled-results', includes: 'sources/*.py*') 
+                //...build steps here
             }
         }
 
         stage('Test') {
-            agent {
-                docker {
-                    image 'qnib/pytest'
-                }
-            }
             steps {
-                sh 'py.test --junit-xml test-reports/results.xml sources/test_calc.py'
-            }
-            post {
-                always {
-                    junit 'test-reports/results.xml'
-                }
+                //...test steps here
             }
         }
 
-        // MANUAL APROVAL
-        stage('Manual Approval') {
-            steps {
-                script {
-                    def userInput = input message: 'Lanjutkan ke tahap Deploy?', submitter: '*'
-
-                    if (userInput == "Abort") {
-                        error('Pengguna menghentikan pipeline.')
-                    }
-                }
-            }
-        }
-
-        stage('Deliver & Deploy') {
+        stage('Deliver') {
             agent any
             environment {
                 VOLUME = '$(pwd)/sources:/src'
@@ -60,6 +31,29 @@ pipeline {
                     sh "docker run --rm -v ${VOLUME} ${IMAGE} 'rm -rf build dist'"
                 }
             }
+        }
+
+        stage('Manual Approval') {
+            steps {
+                input(id: 'userInput', message: 'Lanjutkan ke tahap Deploy?')
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                //...deploy steps here
+                sh 'sleep 60'
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Aplikasi berhasil dideploy dan siap digunakan!'
+        }
+
+        aborted {
+            echo 'Pipeline dihentikan oleh user!'
         }
     }
 }
