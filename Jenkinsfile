@@ -1,18 +1,46 @@
 pipeline {
-    agent any
+    agent none 
     stages {
-        stage('Build') {
+        stage('Build') { 
+            agent {
+                docker {
+                    image 'python:2-alpine' 
+                }
+            }
             steps {
-                //...build steps here
+                sh 'python -m py_compile sources/add2vals.py sources/calc.py' 
+                stash(name: 'compiled-results', includes: 'sources/*.py*') 
             }
         }
 
         stage('Test') {
+            agent {
+                docker {
+                    image 'qnib/pytest'
+                }
+            }
             steps {
-                //...test steps here
+                sh 'py.test --junit-xml test-reports/results.xml sources/test_calc.py'
+            }
+            post {
+                always {
+                    junit 'test-reports/results.xml'
+                }
             }
         }
 
+        // MANUAL APROVAL
+        stage('Manual Approval') {
+            steps {
+                script {
+                    def userInput = input message: 'Lanjutkan ke tahap Deploy?', submitter: '*'
+
+                    if (userInput == "Abort") {
+                        error('Pengguna menghentikan pipeline.')
+                    }
+                }
+            }
+        }
         stage('Deliver') {
             agent any
             environment {
@@ -33,15 +61,8 @@ pipeline {
             }
         }
 
-        stage('Manual Approval') {
-            steps {
-                input(id: 'userInput', message: 'Lanjutkan ke tahap Deploy?')
-            }
-        }
-
         stage('Deploy') {
             steps {
-                //...deploy steps here
                 sh 'sleep 60'
             }
         }
