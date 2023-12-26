@@ -33,7 +33,7 @@ pipeline {
 
         stage('Manual Approval') {
             steps {
-                input message: 'Lanjutkan ke tahap Deploy?', ok: 'Proceed', parameters: [[$class: 'BooleanParameterDefinition', defaultValue: false, description: 'Apakah Anda ingin melanjutkan ke tahap Deploy?', name: 'Proceed']]
+                input message: 'Lanjutkan ke tahap Deploy?',
             }
         }
 
