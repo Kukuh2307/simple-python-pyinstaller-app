@@ -30,6 +30,13 @@ pipeline {
                 }
             }
         }
+
+        stage('Manual Approval') {
+            steps {
+                input message: 'Lanjutkan ke tahap Deploy?', ok: 'Proceed', parameters: [[$class: 'BooleanParameterDefinition', defaultValue: false, description: 'Apakah Anda ingin melanjutkan ke tahap Deploy?', name: 'Proceed']]
+            }
+        }
+
         stage('Deliver') { 
             agent any
             environment { 
@@ -50,23 +57,15 @@ pipeline {
             }
         }
 
-        stage('Manual Approval') {
-            steps {
-                input message: 'Lanjutkan ke tahap Deploy?', ok: 'Proceed', parameters: [[$class: 'BooleanParameterDefinition', defaultValue: false, description: 'Apakah Anda ingin melanjutkan ke tahap Deploy?', name: 'Proceed']]
-            }
-        }
-
         stage('Deploy') {
-        agent any
+            agent any
             steps {
                 script {
-                    if (params.Proceed) {
                         echo 'Deploying the application to production...'
-                    } else {
-                        echo 'Deploy stage aborted.'
-                        currentBuild.result = 'ABORTED'
-                        error('Deploy stage aborted by user.')
-                    }
+
+                        sleep time: 60, unit: 'SECONDS'
+
+                        echo 'Aplikasi berhasil di-deploy.'
                 }
             }
         }
