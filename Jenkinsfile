@@ -29,7 +29,7 @@ pipeline {
             }
         }
 
-        // MANUAL APROVAL
+        // MANUAL APROVAL11
         stage('Manual Approval') {
             steps {
                 script {
@@ -72,7 +72,6 @@ pipeline {
         success {
             echo 'Aplikasi berhasil dideploy dan siap digunakan!'
         }
-
         aborted {
             echo 'Pipeline dihentikan oleh user!'
         }
